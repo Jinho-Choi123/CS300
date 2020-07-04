@@ -15,8 +15,6 @@ def longest_inc_sub(l):
             max_index = i
     return len(subproblem_subseq[max_index]), subproblem_subseq[max_index]
 
-
-
 def lst_search(lst, ele): # assume lst contains ele.
     for i in range(len(lst)-1, -1, -1):
         if lst[i] == ele:
@@ -74,8 +72,9 @@ def longest_common_sub(l1, l2):
             
             subseq2 = []
             if l2[j] in lst_slice(i, l1):
-                cnt = lst_search(l1, l2[j])
-                if cnt == 0 or j == 0:
+                cnt = lst_search(lst_slice(i,l1), l2[j])
+                print(cnt, j)
+                if (cnt == 0) or (j == 0):
                     subseq2 = [l2[j]]
                 else:
                     subseq2 = subproblem[cnt-1][j-1].copy()
@@ -86,4 +85,31 @@ def longest_common_sub(l1, l2):
                 subproblem[i].append(subseq2)
     return len(subproblem[n1-1][n2-1]), subproblem[n1-1][n2-1]
 
-print(longest_common_sub([4,1,2,3,4], [4,3,2,5]))
+print(longest_common_sub([1,42,3,2,1,5], [2,5,1,6,3,42,3,2,5]))
+
+
+#---------------Problem Info-------------------#
+# You are asked to arrange a party for a company. 
+#There are identity numbers for the members in the company such that if there are n members, 
+#each gets assigned an integer 0 ~ n. Of course, the identity number of the president is 0.
+
+# Every employee has a supervisor and, obviously, the president does not have any. 
+#One cannot have two different direct supervisors, hence the relation yields a tree 
+#rooted at 0 (the president). The HR team evaluated performance rates for every member of the company, 
+#even for the president.
+
+# You need to arrange a year-end party for the company, decide whom to be invited. 
+#To make the party a bit fun, you should not invite both an employee and her or his direct supervisor. 
+#Also, you want to make the sum of the performance rates of those who get invited to be maximized.
+
+# Implement arrange_party function where
+
+# n is the number of members in the company,
+# supervising is the 2-dimensional array where supervising[i] is the array of the identity numbers 
+#that i do supervise, and p_rate is the array of floating-point numbers such that p_rate[i] 
+#is the performance rate of i.
+#--------------------------------------#
+
+def arrange_party(n, supervising, p_rate):
+    invitation = [] # invitation[i] is the max number list of member invited when i is invited.
+    
