@@ -187,8 +187,6 @@ def find_pair(lst1, lst2):
         for j in range(n2):
             if l1[i] == l2[j]:
                 pair.append([i, j])
-                l2[j] = 0.5
-                break 
     return pair
 
 def max_length_list(lst): #lst is list of list / return max length list in lst 
@@ -205,7 +203,6 @@ def longest_common_inc_sub(l1, l2): # k is
     #subproblem[i]: i?? ???? ??? ??? ?? common_inc subsequence  
     if pair_list == []:
         return []
-    
     def val_pair(x): # x ?? ?? ? 
         return l1[pair_list[x][0]]
     #basecase: subproblem[0] = l1[pair_list[0][0]]
@@ -213,14 +210,15 @@ def longest_common_inc_sub(l1, l2): # k is
     # subproblem is [ [?? ?? ??? ?? subsequence] ]
     for i in range(1, pair_num):
         subseq_list = [[val_pair(i)]]
-        for j in range(0, i):
-            if val_pair(j)<val_pair(i):
+        for j in range(i):
+            if val_pair(j)<val_pair(i) and pair_list[j][0] < pair_list[i][0] and pair_list[j][1]<pair_list[i][1]:
                 subseq = subproblem[j].copy()
                 subseq.append(val_pair(i))
                 subseq_list.append(subseq)
         #return max length list in subseq_list 
         subproblem.append(max_length_list(subseq_list))
-    result = subproblem[-1]
+    result = max_length_list(subproblem)
     length = len(result)
     return length, result
+
 print(longest_common_inc_sub([1,42,3,2,1,5], [2,5,1,6,42,3,2,5]))
