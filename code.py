@@ -1,3 +1,22 @@
+def longest_inc_sub(l):
+    n = len(l)
+    subproblem_subseq = [[l[0]]]
+    for i in range(1, n):
+        max_subseq = [l[i]]
+        for j in range(0,i):
+            if l[j]<l[i] and len(max_subseq)<len(subproblem_subseq[j])+1:
+                max_subseq = subproblem_subseq[j].copy()
+                max_subseq.append(l[i])
+        subproblem_subseq.append(max_subseq)
+    #find the longest subseq 
+    max_index = 0
+    for i in range(0, n):
+        if len(subproblem_subseq[max_index])<len(subproblem_subseq[i]):
+            max_index = i
+    return len(subproblem_subseq[max_index]), subproblem_subseq[max_index]
+
+
+
 def lst_search(lst, ele): # assume lst contains ele.
     for i in range(len(lst)-1, -1, -1):
         if lst[i] == ele:
