@@ -1,4 +1,5 @@
-def longest_inc_sub(l):
+#function that makes list of subsequence that in index i, only lst[0,...,i] is used
+def inc_sub(l):
     n = len(l)
     subproblem_subseq = [[l[0]]]
     for i in range(1, n):
@@ -8,6 +9,11 @@ def longest_inc_sub(l):
                 max_subseq = subproblem_subseq[j].copy()
                 max_subseq.append(l[i])
         subproblem_subseq.append(max_subseq)
+    return subproblem_subseq
+
+def longest_inc_sub(l):
+    n = len(l)
+    subproblem_subseq = inc_sub(l)
     #find the longest subseq 
     max_index = 0
     for i in range(0, n):
@@ -31,7 +37,7 @@ def longest_common_sub(l1, l2):
     
     n1 = len(l1)
     n2 = len(l2)
-    #subproblem[i][j]: l1[1..i], l2[1...j]에서의 longest common_sub.
+    #subproblem[i][j]: l1[1..i], l2[1...j]엝서의 longest common_sub.
     subproblem = [[]]
     
     #if one of l is empty, return []
@@ -133,6 +139,7 @@ def lst_of_grand_child(i,lst):
     for child in lst_of_child(i,lst):
         lst_of_grand_child.extend(lst_of_child(child, lst))
     return lst_of_grand_child
+
 def sum_of_p(lst, p_rate):
     sum = 0
     for i in lst:
@@ -149,19 +156,71 @@ def arrange_party(n, supervising, p_rate):
                 if(dep == maxdepth):
                     invitation[i] = [i]
                     continue
-                invitation1 = lst_of_child(i, supervising)
-                invitation2 = lst_of_grand_child(i, supervising)
+                invitation1 = []
+                for k in lst_of_child(i, supervising):
+                    invitation1.extend(invitation[k])
 
-                
+                invitation2 = []
+                for k in lst_of_grand_child(i, supervising):
+                    invitation2.extend(invitation[k])
                 invitation2.append(i)
                 if sum_of_p(invitation1, p_rate)> sum_of_p(invitation2, p_rate):
                     invitation[i] = invitation1 
                 else:
                     invitation[i] = invitation2 
-    return sum_of_p(invitation[0], p_rate), invitation[0]
+    result_p = sum_of_p(invitation[0], p_rate)
+    result_lst = invitation[0].copy()
+    result_lst.sort()
+    return result_p, result_lst
 
-print(arrange_party(5, [[1, 4], [3, 2], [], [], []], [0.0, 11.1, 5.5, 4.5, 2.0]))
-
-        
+print(arrange_party(5, [[3], [2], [4], [1], []], [15.0, 11.1, 5.5, 4.5, 2.0]))
 
 
+def find_pair(lst1, lst2):
+    #find the same element, and pair it.and return it 
+    l1 = lst1.copy()
+    l2 = lst2.copy()
+    n1 = len(lst1)
+    n2 = len(lst2)
+    pair = []
+    for i in range(n1):
+        for j in range(n2):
+            if l1[i] == l2[j]:
+                pair.append([i, j])
+                l2[j] = 0.5
+                break 
+    return pair
+
+def max_length_list(lst): #lst is list of list / return max length list in lst 
+    max = lst[0]
+    for i in range(len(lst)):
+        if len(max)<len(lst[i]):
+            max = lst[i]
+    return max 
+
+def longest_common_inc_sub(l1, l2): # k is 
+    pair_list = find_pair(l1, l2)
+    pair_num = len(pair_list)
+    subproblem = []
+    #subproblem[i]: i?? ???? ??? ??? ?? common_inc subsequence  
+    if pair_list == []:
+        return []
+    
+    def val_pair(x): # x ?? ?? ? 
+        return l1[pair_list[x][0]]
+    #basecase: subproblem[0] = l1[pair_list[0][0]]
+    subproblem.append([l1[pair_list[0][0]]])
+    # subproblem is [ [?? ?? ??? ?? subsequence] ]
+    for i in range(1, pair_num):
+        subseq_list = [[val_pair(i)]]
+        for j in range(0, i):
+            if val_pair(j)<val_pair(i):
+                subseq = subproblem[j].copy()
+                subseq.append(val_pair(i))
+                subseq_list.append(subseq)
+        #return max length list in subseq_list 
+        subproblem.append(max_length_list(subseq_list))
+    result = subproblem[-1]
+    length = len(result)
+    return length, result
+print(longest_common_inc_sub([1,42,3,2,1,5], [2,5,1,6,42,3,2,5]))
