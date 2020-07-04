@@ -85,7 +85,6 @@ def longest_common_sub(l1, l2):
                 subproblem[i].append(subseq2)
     return len(subproblem[n1-1][n2-1]), subproblem[n1-1][n2-1]
 
-print(longest_common_sub([1,42,3,2,1,5], [2,5,1,6,3,42,3,2,5]))
 
 
 #---------------Problem Info-------------------#
@@ -110,6 +109,59 @@ print(longest_common_sub([1,42,3,2,1,5], [2,5,1,6,3,42,3,2,5]))
 #is the performance rate of i.
 #--------------------------------------#
 
+
+def depth_of_tree(lst):# the depth[i] is the depth of persom i in the supervisor tree #base case: president is depth of 0
+    # other's depth will be changed. so don't matter # also returns maximum depth
+    depth = [0]*len(lst)
+    cnt = 0
+    Q= [0]
+    while len(Q) != 0:
+        for person in Q:
+            depth[person] = cnt 
+        cnt = cnt+1
+        newQue = []
+        for person in Q:
+            newQue.extend(lst[person])
+        Q = newQue 
+    return depth , (cnt-1)
+
+def lst_of_child(i, lst):
+    return lst[i]
+
+def lst_of_grand_child(i,lst):
+    lst_of_grand_child = []
+    for child in lst_of_child(i,lst):
+        lst_of_grand_child.extend(lst_of_child(child, lst))
+    return lst_of_grand_child
+def sum_of_p(lst, p_rate):
+    sum = 0
+    for i in lst:
+        sum = sum + p_rate[i]
+    return sum 
+
 def arrange_party(n, supervising, p_rate):
-    invitation = [] # invitation[i] is the max number list of member invited when i is invited.
-    
+    invitation = [[]]*n # invitation[i] is the max performace number list of member invited of tree root of i.
+    depth, maxdepth = depth_of_tree(supervising)
+
+    for dep in range(maxdepth, -1, -1): # sub is maxdepth-1, maxdepth-2, ..., 0 
+        for i in range(n): #searching for person who's depth is dep
+            if(depth[i] == dep):
+                if(dep == maxdepth):
+                    invitation[i] = [i]
+                    continue
+                invitation1 = lst_of_child(i, supervising)
+                invitation2 = lst_of_grand_child(i, supervising)
+
+                
+                invitation2.append(i)
+                if sum_of_p(invitation1, p_rate)> sum_of_p(invitation2, p_rate):
+                    invitation[i] = invitation1 
+                else:
+                    invitation[i] = invitation2 
+    return sum_of_p(invitation[0], p_rate), invitation[0]
+
+print(arrange_party(5, [[1, 4], [3, 2], [], [], []], [0.0, 11.1, 5.5, 4.5, 2.0]))
+
+        
+
+
